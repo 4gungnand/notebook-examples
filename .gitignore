@@ -11,3 +11,5 @@ opencharts/*.png
 *.grib2
 *.nc
 *.png
+earthengine_data/*.csv
+earthengine_data/*.tif

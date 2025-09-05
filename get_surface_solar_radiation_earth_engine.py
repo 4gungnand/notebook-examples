@@ -6,54 +6,51 @@ ee.Initialize(project='project-solar-forecast')
 
 dataset = ee.ImageCollection('ECMWF/NRT_FORECAST/IFS/OPER')
 
-def get_daily_radiation(target_date):
-    # Convert Python datetime.date → string
-    date = ee.Date(str(target_date))
+# Region of interest (Tokyo)
+tokyo = ee.Geometry.Point([139.6917, 35.6895])
+
+# Forecast start date (today 00 UTC)
+start = datetime.date.today().strftime("%Y-%m-%d")
+end = (datetime.date.today() + datetime.timedelta(days=2)).strftime("%Y-%m-%d")  # 2 days ahead
+
+# Filter dataset for forecast run
+images = (dataset
+          .filterDate(start, end)
+          .select('surface_solar_radiation_downwards_sfc')
+          .sort('forecast_time'))  # ensure ordered
+
+# Convert to list for iteration
+img_list = images.toList(images.size())
+
+rows = []
+n = img_list.size().getInfo()
+
+# Loop consecutive pairs (difference → hourly radiation)
+for i in range(1, n):
+    img_prev = ee.Image(img_list.get(i-1))
+    img_curr = ee.Image(img_list.get(i))
     
-    image = (dataset
-             .filterDate(date, date.advance(1, 'day'))
-             .select('surface_solar_radiation_downwards_sfc')
-             .mean())
+    # Forecast valid time
+    valid_time = img_curr.get('forecast_time').getInfo()
     
-    return image.set('date', str(target_date))
-
-# Define regions of interest (Tokyo, Hokkaido, Tohoku)
-regions = {
-    "Tokyo": ee.Geometry.Point([139.6917, 35.6895]),        # Tokyo point
-    "Hokkaido": ee.Geometry.Rectangle([139.5, 41.0, 146.0, 45.5]),  # Rough bounding box
-    "Tohoku": ee.Geometry.Rectangle([139.0, 37.0, 141.5, 40.5])     # Rough bounding box
-}
-
-# Example: past 7 days
-today = datetime.date.today()
-images = [get_daily_radiation(today - datetime.timedelta(days=i)) for i in range(7)]
-
-# # Export statistics (CSV) for each region
-# for region_name, geom in regions.items():
-#     for img in images:
-#         date_str = img.get('date').getInfo()
-#         task = ee.batch.Export.table.toDrive(
-#             collection=img.reduceRegions(
-#                 reducer=ee.Reducer.mean(),
-#                 collection=ee.FeatureCollection([ee.Feature(geom)]),
-#                 scale=25000  # ECMWF resolution ~0.25° (~25km)
-#             ),
-#             description=f"ECMWF_solar_{region_name}_{date_str}",
-#             fileFormat='CSV'
-#         )
-#         task.start()
-#         print(f"Exporting {region_name} {date_str} to Google Drive...")
-
-# Optional: Export raster GeoTIFF for entire Japan region
-japan_bbox = ee.Geometry.Rectangle([128.0, 30.0, 146.0, 46.0])
-for img in images:
-    date_str = img.get('date').getInfo()
-    task = ee.batch.Export.image.toDrive(
-        image=img,
-        description=f"ECMWF_solar_Japan_{date_str}",
-        region=japan_bbox,
+    # Radiation increment
+    diff = img_curr.subtract(img_prev)
+    stats = diff.reduceRegion(
+        reducer=ee.Reducer.mean(),
+        geometry=tokyo,
         scale=25000,
-        fileFormat='GeoTIFF'
-    )
-    task.start()
-    print(f"Exporting raster for Japan {date_str} to Google Drive...")
+        maxPixels=1e9
+    ).getInfo()
+    
+    value = stats.get('surface_solar_radiation_downwards_sfc', None)
+    
+    rows.append({
+        "forecast_time": valid_time,
+        "region": "Tokyo",
+        "solar_radiation_J_per_m2": value
+    })
+
+df = pd.DataFrame(rows)
+df.to_csv("ecmwf_solar_radiation_tokyo_hourly.csv", index=False)
+
+print("✅ Saved hourly forecast to ecmwf_solar_radiation_tokyo_hourly.csv")
