@@ -5,3 +5,6 @@ opencharts/._mv_viewinfo_
 .DS_Store
 ._mv_iconlist_
 ._mv_viewinfo_
+opencharts/*.png
+
+.conda
