@@ -8,3 +8,6 @@ opencharts/._mv_viewinfo_
 opencharts/*.png
 
 .conda
+*.grib2
+*.nc
+*.png

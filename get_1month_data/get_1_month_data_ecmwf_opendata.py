@@ -1,3 +1,4 @@
+# Referensi: medium-2t-wind.ipynb
 from ecmwf.opendata import Client
 import datetime
 
@@ -15,23 +16,25 @@ for i in range(31):
     print(f"Mengunduh data untuk {DATE_STR}...")
 
     # Simpan hasil ke file grib
-    FILENAME = 'medium-2t-wind.grib'
+    FILENAME = f'medium-2t-wind-{DATE_STR}.grib2'
     TYPE = "fc"          # forecast
-    # STREAM = "oper"      # operational
+    # STREAM = "oper"    # operational
     TIME="00"            # run model jam 00 UTC
-    STEP=6               # jam ke 6 dari run model 
-    PARAMETERS = ['10u', '10v','2t', 'mx2t3', 'mn2t3'] 
+    STEP=[0, 3, 6, 9, 12, 15, 18, 21, 24]  # forecast step dalam jam
+    # Variabel yang diambil: 10u (u wind 10m), 10v (v wind 10m), 2t (temp 2m), mx2t3 (max temp 2m 3hr), mn2t3 (min temp 2m 3hr)
+    PARAMETERS = ['10u', '10v', '2t', 'mx2t3', 'mn2t3'] 
+    LEVELTYPE = "sfc"    # surface
 
     try:
         c.retrieve(
-            type=TYPE,           # forecast
-            # stream=STREAM,    # operational
+            type=TYPE,         
+            # stream=STREAM,     
             date=DATE_STR,
-            time=TIME,        # run model jam 00 UTC
+            time=TIME,        
             step=STEP,
             param=PARAMETERS,
-            levtype="sfc",      # surface
-            target=FILENAME
+            levtype=LEVELTYPE,    
+            target=FILENAME,
         )
         
     except Exception as e:
