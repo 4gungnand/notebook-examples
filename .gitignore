@@ -13,3 +13,4 @@ opencharts/*.png
 *.png
 earthengine_data/*.csv
 earthengine_data/*.tif
+*.idx

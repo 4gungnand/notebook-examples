@@ -1,4 +1,4 @@
-# Referensi: medium-2t-wind.ipynb
+# Reference: https://confluence.ecmwf.int/display/DAC/ECMWF+open+data%3A+real-time+forecasts+from+IFS+and+AIFS
 from ecmwf.opendata import Client
 import datetime
 
@@ -14,10 +14,10 @@ print(f"Mengunduh data untuk {DATE_STR}...")
 
 # Simpan hasil ke file grib
 FILENAME = f'medium-2t-wind-{DATE_STR}.grib2'
-TYPE = "fc"          # forecast
-# STREAM = "oper"    # operational
-TIME="00"            # run model jam 00 UTC
-STEP=list(range(0,361, 6))  # forecast step dalam jam
+TYPE = "fc"                   # forecast
+# STREAM = "oper"             # operational
+TIME= "00"                    # run model jam 00 UTC
+STEP= list(range(0,361, 6))   # forecast step dalam jam
 PARAMETERS = ['ssrd'] 
 LEVELTYPE = "sfc"    # surface
 
