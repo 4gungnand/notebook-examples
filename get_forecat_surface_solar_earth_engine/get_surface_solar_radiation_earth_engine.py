@@ -1,5 +1,6 @@
 import ee
 import datetime
+import pandas as pd
 
 # Initialize with your Google Cloud project linked to Earth Engine
 ee.Initialize(project='project-solar-forecast')
