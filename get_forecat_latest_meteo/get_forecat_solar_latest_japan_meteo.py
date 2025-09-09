@@ -18,8 +18,8 @@ params = {
     "hourly": ["global_tilted_irradiance", "shortwave_radiation", "diffuse_radiation", "direct_normal_irradiance", "direct_radiation", "terrestrial_radiation", "temperature_2m", "relative_humidity_2m", "dew_point_2m", "apparent_temperature", "precipitation", "snowfall", "rain", "pressure_msl", "surface_pressure", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high", "vapour_pressure_deficit", "weather_code", "cloud_cover", "et0_fao_evapotranspiration", "wind_speed_10m", "wind_speed_100m", "wind_direction_10m", "wind_direction_100m", "wind_gusts_10m", "surface_temperature", "runoff", "cape", "total_column_integrated_water_vapour"],
     "models": "ecmwf_aifs025_single",
     "timezone": "Asia/Tokyo",
-    "start_date": "2025-05-09",
-    "end_date": "2025-07-09",
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
 }
 responses = openmeteo.weather_api(url, params=params)
 

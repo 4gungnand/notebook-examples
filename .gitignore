@@ -11,6 +11,5 @@ opencharts/*.png
 *.grib2
 *.nc
 *.png
-*.csv
 earthengine_data/*.tif
 *.idx
