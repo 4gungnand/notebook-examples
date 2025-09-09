@@ -7,10 +7,11 @@ import datetime
 MODELNAME = "aifs-single"
 c = Client(model=MODELNAME)
 
-# Tentukan tanggal
-today = datetime.date.today()
+# Tentukan tanggal 1 tahun lalu
+today = datetime.datetime.today()
+# today = datetime.datetime(2024, 6, 1)  # untuk tes
+date = today - datetime.timedelta(days=365)
 
-date = today
 DATE_STR = date.strftime("%Y-%m-%d %H:%M:%S")
 print(f"Mengunduh data untuk {DATE_STR}...")
 
@@ -29,7 +30,7 @@ try:
     c.retrieve(
         type=TYPE,
         # stream=STREAM,
-        # date=DATE_STR,
+        date=DATE_STR,
         # Kalau date gak ada, otomatis ambil yang terbaru
         time=TIME,
         step=STEP,
