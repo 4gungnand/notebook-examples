@@ -12,5 +12,6 @@ opencharts/*.png
 *.nc
 *.png
 earthengine_data/*.csv
+get_forecat_latest_meteo/*.csv
 earthengine_data/*.tif
 *.idx
